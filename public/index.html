@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI 客服平台</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+
+<!-- ===== 登录/注册页面 ===== -->
+<div id="page-auth" class="page-auth">
+  <header class="auth-header">
+    <div class="auth-header-logo">
+      <div class="logo-icon">🤖</div>
+      <span>AI 客服平台</span>
+    </div>
+    <div class="auth-header-links">
+      <a href="#">帮助中心</a>
+      <button class="btn-outline-sm">联系我们</button>
+    </div>
+  </header>
+
+  <main class="auth-main">
+    <div class="auth-card">
+      <!-- 左侧蓝色区域 -->
+      <div class="auth-left">
+        <h1>释放 AI 的力量<br/>提升您的客户体验</h1>
+        <p>集成最先进的大语言模型，为您的企业提供 7×24 小时全自动、智能化的客户支持方案。</p>
+        <div class="auth-feature-card">
+          <div class="feature-icon">🧠</div>
+          <div>
+            <div class="feature-title">智能化回复</div>
+            <div class="feature-bars">
+              <div class="bar" style="width:85%"></div>
+              <div class="bar" style="width:65%"></div>
+              <div class="bar" style="width:75%"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 右侧登录/注册表单 -->
+      <div class="auth-right">
+        <h2>登录与注册</h2>
+        <p class="auth-subtitle">欢迎回来，请管理您的智能客服系统</p>
+
+        <div class="auth-tabs">
+          <button class="auth-tab active" id="tab-login" onclick="switchAuthTab('login')">登录</button>
+          <button class="auth-tab" id="tab-register" onclick="switchAuthTab('register')">注册</button>
+        </div>
+
+        <div id="auth-error" class="auth-error hidden"></div>
+
+        <!-- 登录表单 -->
+        <form id="form-login" class="auth-form" onsubmit="handleLogin(event)">
+          <div class="form-group">
+            <label>用户名</label>
+            <div class="input-wrap">
+              <span class="input-icon">👤</span>
+              <input type="text" id="login-username" placeholder="请输入您的用户名" required />
+            </div>
+          </div>
+          <div class="form-group">
+            <label>
+              密码
+              <a href="#" class="forgot">忘记密码？</a>
+            </label>
+            <div class="input-wrap">
+              <span class="input-icon">🔒</span>
+              <input type="password" id="login-password" placeholder="请输入您的密码" required />
+            </div>
+          </div>
+          <label class="checkbox-label">
+            <input type="checkbox" id="remember-me" /> 记住我
+          </label>
+          <button type="submit" class="btn-primary-full" id="btn-login">立即登录 →</button>
+          <div class="auth-or">或其他方式登录</div>
+          <div class="auth-other-btns">
+            <button type="button" class="btn-other">🟢 微信登录</button>
+            <button type="button" class="btn-other">@ 飞书登录</button>
+          </div>
+        </form>
+
+        <!-- 注册表单 -->
+        <form id="form-register" class="auth-form hidden" onsubmit="handleRegister(event)">
+          <div class="form-group">
+            <label>用户名</label>
+            <div class="input-wrap">
+              <span class="input-icon">👤</span>
+              <input type="text" id="reg-username" placeholder="请输入用户名（2-20位）" required />
+            </div>
+          </div>
+          <div class="form-group">
+            <label>密码</label>
+            <div class="input-wrap">
+              <span class="input-icon">🔒</span>
+              <input type="password" id="reg-password" placeholder="请输入密码（至少6位）" required />
+            </div>
+          </div>
+          <div class="form-group">
+            <label>确认密码</label>
+            <div class="input-wrap">
+              <span class="input-icon">🔒</span>
+              <input type="password" id="reg-password2" placeholder="请再次输入密码" required />
+            </div>
+          </div>
+          <button type="submit" class="btn-primary-full" id="btn-register">立即注册 →</button>
+        </form>
+      </div>
+    </div>
+  </main>
+
+  <footer class="auth-footer">
+    © 2024 AI 客服平台. 保留所有权利. | <a href="#">隐私政策</a> | <a href="#">服务条款</a>
+  </footer>
+</div>
+
+<!-- ===== 主平台页面 ===== -->
+<div id="page-main" class="hidden">
+
+  <!-- 顶部 Tab 切换 -->
+  <div class="main-tab-bar">
+    <div class="main-tab-logo">
+      <span class="logo-icon">🤖</span>
+      <span>AI 客服平台</span>
+    </div>
+    <div class="main-tabs">
+      <button class="main-tab active" id="tab-user" onclick="switchMainTab('user')">💬 用户端</button>
+      <button class="main-tab" id="tab-admin" onclick="switchMainTab('admin')">⚙️ 后台管理</button>
+    </div>
+    <div class="main-tab-user">
+      <span id="header-username">用户</span>
+      <div class="user-avatar" id="header-avatar">U</div>
+      <button class="btn-logout" onclick="handleLogout()">退出</button>
+    </div>
+  </div>
+
+  <!-- ===== 用户端 ===== -->
+  <div id="panel-user" class="panel">
+    <div class="chat-layout">
+      <!-- 左侧边栏 -->
+      <aside class="chat-sidebar">
+        <div class="sidebar-header">
+          <div class="sidebar-logo">
+            <span class="logo-icon-sm">🤖</span>
+            <div>
+              <div class="sidebar-title">智能客服</div>
+              <div class="sidebar-sub">基于 Zhipu AI Model</div>
+            </div>
+          </div>
+          <button class="btn-new-chat" onclick="createNewConversation()">＋ 开启新对话</button>
+        </div>
+
+        <nav class="sidebar-nav">
+          <div class="nav-section-label">常用功能</div>
+          <a class="nav-item active" onclick="showChatPane()">
+            <span class="nav-icon">💬</span> 对话窗口
+          </a>
+          <a class="nav-item" onclick="showHistoryPane()">
+            <span class="nav-icon">🕐</span> 聊天历史
+          </a>
+          <a class="nav-item" onclick="showKbInfoPane()">
+            <span class="nav-icon">📚</span> 知识库
+          </a>
+        </nav>
+
+        <div class="sidebar-history">
+          <div class="nav-section-label">最近对话</div>
+          <div id="conv-list"></div>
+        </div>
+
+        <div class="sidebar-footer">
+          <a class="nav-item" href="#">
+            <span class="nav-icon">⚙️</span> 设置
+          </a>
+        </div>
+      </aside>
+
+      <!-- 右侧聊天区 -->
+      <main class="chat-main">
+        <!-- 聊天面板 -->
+        <div id="chat-pane">
+          <div class="chat-header">
+            <div class="chat-header-info">
+              <div class="online-dot"></div>
+              <span id="chat-conv-title">智谱 AI 助手</span>
+              <span class="badge-pro">PRO</span>
+            </div>
+            <div class="chat-header-actions">
+              <button class="icon-btn" title="搜索">🔍</button>
+              <button class="icon-btn" title="帮助">❓</button>
+              <div class="user-avatar-sm" id="chat-avatar">U</div>
+            </div>
+          </div>
+
+          <div class="chat-messages" id="chat-messages">
+            <div class="chat-welcome">
+              <div class="ai-msg-wrap">
+                <div class="ai-avatar">🤖</div>
+                <div class="ai-bubble">
+                  <p>你好！我是你的智能服务助手，基于 Zhipu AI Model 开发。请问今天有什么可以帮你的吗？</p>
+                  <span class="msg-time" id="welcome-time"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="chat-input-area">
+            <div class="chat-input-box">
+              <button class="icon-btn" title="附件">📎</button>
+              <textarea id="chat-input" placeholder="在此输入您的问题..." rows="1" onkeydown="handleChatKey(event)" oninput="autoResize(this)"></textarea>
+              <button class="icon-btn" title="表情">😊</button>
+              <button class="btn-send" id="btn-send" onclick="sendMessage()">▶</button>
+            </div>
+            <div class="chat-footer-tip">POWERED BY ZHIPU AI · AI 可能会产生误差，请核实重要信息</div>
+          </div>
+        </div>
+
+        <!-- 历史面板 -->
+        <div id="history-pane" class="hidden pane-content">
+          <h2>聊天历史</h2>
+          <div id="history-list" class="history-list"></div>
+        </div>
+
+        <!-- 知识库信息面板 -->
+        <div id="kb-info-pane" class="hidden pane-content">
+          <h2>知识库</h2>
+          <p class="pane-desc">以下知识库正在为您提供智能回答支持：</p>
+          <div id="kb-info-list" class="kb-info-list"></div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- ===== 后台管理端 ===== -->
+  <div id="panel-admin" class="panel hidden">
+    <div class="admin-layout">
+      <!-- 顶部导航 -->
+      <nav class="admin-nav">
+        <div class="admin-nav-logo">
+          <span class="logo-icon-sm">🤖</span>
+          <span>AI客服平台</span>
+        </div>
+        <div class="admin-nav-links">
+          <a class="admin-nav-link" onclick="showAdminPane('dashboard')">仪表盘</a>
+          <a class="admin-nav-link active" id="nav-kb" onclick="showAdminPane('kb')">知识库</a>
+          <a class="admin-nav-link" onclick="showAdminPane('bot')">机器人配置</a>
+          <a class="admin-nav-link" onclick="showAdminPane('logs')">对话记录</a>
+          <a class="admin-nav-link" onclick="showAdminPane('settings')">设置</a>
+        </div>
+        <div class="admin-nav-right">
+          <div class="admin-search">
+            <input type="text" placeholder="搜索知识库..." id="admin-search-input" oninput="filterKbList(this.value)" />
+            🔍
+          </div>
+          <button class="icon-btn">🔔</button>
+          <div class="user-avatar-sm admin-avatar" id="admin-user-avatar">A</div>
+        </div>
+      </nav>
+
+      <!-- 内容区 -->
+      <div class="admin-content">
+
+        <!-- 知识库管理面板 -->
+        <div id="admin-pane-kb">
+          <div class="admin-page-header">
+            <div>
+              <h1>知识库管理</h1>
+              <p>上传并管理您的训练数据源，让 AI 更懂您的业务。</p>
+            </div>
+            <button class="btn-primary" onclick="showCreateKbModal()">＋ 创建知识库</button>
+          </div>
+
+          <div class="kb-sub-tabs">
+            <button class="kb-sub-tab active" onclick="filterKbTab('all', this)">⚏ 全部知识库</button>
+            <button class="kb-sub-tab" onclick="filterKbTab('recent', this)">🕐 最近使用</button>
+            <button class="kb-sub-tab" onclick="filterKbTab('recycle', this)">🗑 回收站</button>
+          </div>
+
+          <!-- 上传区域 -->
+          <div class="upload-zone" id="upload-zone" ondragover="handleDragOver(event)" ondrop="handleDrop(event)">
+            <div class="upload-icon">☁️</div>
+            <div class="upload-title">上传新文档</div>
+            <div class="upload-desc">支持 PDF、Word (docx) 格式，单文件最大 20MB。我们将自动进行分段处理。</div>
+            <div class="upload-types">
+              <span class="badge-pdf">🔴 PDF</span>
+              <span class="badge-docx">🔵 DOCX</span>
+            </div>
+            <div id="upload-kb-selector" class="upload-kb-selector hidden">
+              <label>选择知识库：</label>
+              <select id="upload-kb-select"></select>
+            </div>
+            <button class="btn-primary" onclick="document.getElementById('file-input').click()">选择文件并上传</button>
+            <input type="file" id="file-input" accept=".pdf,.docx,.doc" style="display:none" onchange="handleFileSelect(event)" />
+          </div>
+
+          <!-- 上传进度 -->
+          <div id="upload-progress" class="hidden upload-progress-bar">
+            <div id="upload-progress-inner"></div>
+          </div>
+          <div id="upload-status" class="hidden upload-status-text"></div>
+
+          <!-- 知识库列表 -->
+          <div id="kb-cards" class="kb-cards"></div>
+          <div class="kb-load-more">
+            <button class="btn-ghost" onclick="loadKbList()">查看更多知识库 ▾</button>
+          </div>
+        </div>
+
+        <!-- 仪表盘面板 -->
+        <div id="admin-pane-dashboard" class="hidden pane-content">
+          <h2>仪表盘</h2>
+          <div class="dashboard-stats" id="dashboard-stats"></div>
+        </div>
+
+        <!-- 机器人配置面板 -->
+        <div id="admin-pane-bot" class="hidden pane-content">
+          <h2>机器人配置</h2>
+          <p>使用 GLM-4-Flash 模型，通过知识库增强回答。</p>
+          <div class="config-card">
+            <div class="config-row"><label>模型</label><span>GLM-4-Flash</span></div>
+            <div class="config-row"><label>温度</label><span>0.7</span></div>
+            <div class="config-row"><label>最大 Token</label><span>1024</span></div>
+            <div class="config-row"><label>RAG 检索段落数</label><span>3</span></div>
+          </div>
+        </div>
+
+        <!-- 对话记录面板 -->
+        <div id="admin-pane-logs" class="hidden pane-content">
+          <h2>对话记录</h2>
+          <div id="admin-logs-list"></div>
+        </div>
+
+        <!-- 设置面板 -->
+        <div id="admin-pane-settings" class="hidden pane-content">
+          <h2>设置</h2>
+          <p>平台基础设置。</p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ===== 创建知识库弹窗 ===== -->
+<div id="modal-create-kb" class="modal-overlay hidden" onclick="closeModalOnOverlay(event, 'modal-create-kb')">
+  <div class="modal-box">
+    <h3>创建知识库</h3>
+    <div class="form-group">
+      <label>知识库名称 *</label>
+      <input type="text" id="new-kb-name" placeholder="请输入知识库名称" />
+    </div>
+    <div class="form-group">
+      <label>描述（可选）</label>
+      <textarea id="new-kb-desc" placeholder="简要描述该知识库的用途" rows="3"></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-ghost" onclick="closeModal('modal-create-kb')">取消</button>
+      <button class="btn-primary" onclick="handleCreateKb()">创建</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 知识库文档列表弹窗 ===== -->
+<div id="modal-kb-docs" class="modal-overlay hidden" onclick="closeModalOnOverlay(event, 'modal-kb-docs')">
+  <div class="modal-box modal-wide">
+    <h3 id="kb-docs-title">文档列表</h3>
+    <div id="kb-docs-list" class="docs-list"></div>
+    <div class="modal-actions">
+      <button class="btn-ghost" onclick="closeModal('modal-kb-docs')">关闭</button>
+    </div>
+  </div>
+</div>
+
+<script src="/js/app.js"></script>
+</body>
+</html>
