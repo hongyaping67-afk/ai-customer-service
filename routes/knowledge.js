@@ -112,20 +112,18 @@ router.post('/:id/upload', authenticateToken, upload.single('file'), async (req,
         file_type: fileType, size: req.file.size, status: 'processing', chunk_count: 0,
     });
 
-    res.json({ message: '文件上传成功，正在处理...', doc_id: doc.id });
-
-    setImmediate(async () => {
-        try {
-            const text = await parseDocument(req.file.path, fileType);
-            const chunks = splitIntoChunks(text);
-            db.insertMany('document_chunks', chunks.map((c, i) => ({ doc_id: doc.id, kb_id: kbId, content: c, chunk_index: i })));
-            db.update('documents', r => r.id === doc.id, { status: 'done', chunk_count: chunks.length });
-            console.log(`文档 ${req.file.originalname} 处理完成，共 ${chunks.length} 段落`);
-        } catch (err) {
-            console.error('文档处理失败:', err.message);
-            db.update('documents', r => r.id === doc.id, { status: 'error' });
-        }
-    });
+    try {
+        const text = await parseDocument(req.file.path, fileType);
+        const chunks = splitIntoChunks(text);
+        db.insertMany('document_chunks', chunks.map((c, i) => ({ doc_id: doc.id, kb_id: kbId, content: c, chunk_index: i })));
+        db.update('documents', r => r.id === doc.id, { status: 'done', chunk_count: chunks.length });
+        console.log(`文档 ${originalName} 处理完成，共 ${chunks.length} 段落`);
+        res.json({ message: '文件处理完成', doc_id: doc.id, chunk_count: chunks.length });
+    } catch (err) {
+        console.error('文档处理失败:', err.message);
+        db.update('documents', r => r.id === doc.id, { status: 'error' });
+        res.status(500).json({ error: '文档处理失败: ' + err.message });
+    }
 });
 
 router.delete('/:kbId/documents/:docId', authenticateToken, (req, res) => {
