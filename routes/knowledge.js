@@ -7,11 +7,19 @@ const { authenticateToken } = require('./auth');
 
 const router = express.Router();
 
-const uploadDir = process.env.NETLIFY
+const isServerless = !!(process.env.NETLIFY || process.env.AWS_LAMBDA_FUNCTION_NAME || process.env.LAMBDA_TASK_ROOT);
+
+const uploadDir = isServerless
     ? path.join('/tmp', 'uploads')
     : path.join(__dirname, '../uploads');
 
-if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
+if (!fs.existsSync(uploadDir)) {
+    try {
+        fs.mkdirSync(uploadDir, { recursive: true });
+    } catch (err) {
+        console.error('无法创建上传目录:', err.message);
+    }
+}
 
 const storage = multer.diskStorage({
     destination: uploadDir,

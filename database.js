@@ -6,11 +6,19 @@ const fs = require('fs');
 const path = require('path');
 const bcrypt = require('bcryptjs');
 
-const DATA_DIR = process.env.NETLIFY
+const isServerless = !!(process.env.NETLIFY || process.env.AWS_LAMBDA_FUNCTION_NAME || process.env.LAMBDA_TASK_ROOT);
+
+const DATA_DIR = isServerless
   ? path.join('/tmp', 'data')
   : path.join(__dirname, 'data');
 
-if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
+if (!fs.existsSync(DATA_DIR)) {
+  try {
+    fs.mkdirSync(DATA_DIR, { recursive: true });
+  } catch (err) {
+    console.error('无法创建数据目录:', err.message);
+  }
+}
 
 const DB_FILE = path.join(DATA_DIR, 'db.json');
 
@@ -35,7 +43,11 @@ function loadDB() {
 }
 
 function saveDB(data) {
-  fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2));
+  try {
+    fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2));
+  } catch (err) {
+    console.error('数据库保存失败:', err.message);
+  }
 }
 
 function nextId(data, table) {
